@@ -23,7 +23,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
+ 
 cc.g_NumberOfDraws = 0;
 
 cc.GLToClipTransform = function (transformOut) {
@@ -228,7 +228,7 @@ cc.Director = cc.Class.extend(/** @lends cc.Director# */{
             cc.eventManager.dispatchEvent(this._eventAfterUpdate);
         }
 
-        this._clear();
+        renderer.clear();
 
         /* to avoid flickr, nextScene MUST be here: after tick and before draw.
          XXX: Which bug is this one. It seems that it can't be reproduced with v0.9 */
@@ -508,9 +508,11 @@ cc.Director = cc.Class.extend(/** @lends cc.Director# */{
      * set color for clear screen.<br/>
      * Implementation can be found in CCDirectorCanvas.js/CCDirectorWebGL.js
      * @function
-     * @param {cc.math.Vec3,Number} clearColor,alpha
+     * @param {cc.color} clearColor
      */
-     setClearColor: null,
+    setClearColor: function(clearColor) {
+        cc.renderer._clearColor = clearColor;
+     },
     /**
      * Sets the default values based on the CCConfiguration info
      */

@@ -37,15 +37,6 @@ if (cc._renderType === cc._RENDER_TYPE_CANVAS) {
     _p.setDepthTest = function () {
     };
 
-    _p.setClearColor = function(clearColor,alpha) {
-        var context = cc._renderContext;
-        var currentColor = clearColor || new cc.math.Vec3(0,0,0);
-        var ColorArray = clearColor.toTypeArray();        
-        var fillStyle = 'rgb(' +ColorArray[0]+','+ColorArray[1]+','+ColorArray[2]+')' ;
-        context.setFillStyle(fillStyle);
-        context.setGlobalAplha(alpha);
-        context.fillRect(context._offsetX, context._offsetY, context.canvas.height, context.canvas.width);
-    };
     _p.setOpenGLView = function (openGLView) {
         // set size
         this._winSizeInPoints.width = cc._canvas.width;      //this._openGLView.getDesignResolutionSize();
@@ -53,13 +44,6 @@ if (cc._renderType === cc._RENDER_TYPE_CANVAS) {
         this._openGLView = openGLView || cc.view;
         if (cc.eventManager)
             cc.eventManager.setEnabled(true);
-    };
-
-    _p._clear = function () {
-        var viewport = this._openGLView.getViewPortRect();
-        var context = cc._renderContext.getContext();
-        context.setTransform(1,0,0,1, 0, 0);
-        context.clearRect(-viewport.x, viewport.y, viewport.width, viewport.height);
     };
 
     _p._createStatsLabel = function () {
