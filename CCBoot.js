@@ -643,7 +643,7 @@ cc.loader = /** @lends cc.loader# */{
                 jsLoadingImg.src = cc._loadingImage;
 
             var canvasNode = d.getElementById(cc.game.config["id"]);
-            canvasNode.style.backgroundColor = "black";
+            canvasNode.style.backgroundColor = "transparent";
             canvasNode.parentNode.appendChild(jsLoadingImg);
 
             var canvasStyle = getComputedStyle ? getComputedStyle(canvasNode) : canvasNode.currentStyle;
