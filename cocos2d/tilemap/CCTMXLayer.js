@@ -111,7 +111,7 @@ cc.TMXLayer = cc.SpriteBatchNode.extend(/** @lends cc.TMXLayer# */{
      * @param {cc.Size|Number} size The untransformed size of the TMXLayer or The untransformed size's width of the TMXLayer.
      * @param {Number} [height] The untransformed size's height of the TMXLayer.
      */
-    setContentSize:function (size, height) {
+    setContentSize: function (size, height) {
 	    cc.Node.prototype.setContentSize.call(this, size, height);
         this._renderCmd._updateCacheContext(size, height);
     },

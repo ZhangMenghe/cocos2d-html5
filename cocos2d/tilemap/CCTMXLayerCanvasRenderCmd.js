@@ -87,6 +87,9 @@
         wrapper.setGlobalAlpha(alpha);
 
         var locCacheCanvas = this._cacheCanvas;
+        var viewPort = cc.view._viewPortRect;
+        var capturePos = this._calculateCapturePosition();
+
         //direct draw image by canvas drawImage
         if (locCacheCanvas && locCacheCanvas.width !== 0 && locCacheCanvas.height !== 0) {
             wrapper.setTransform(this._realWorldTransform, scaleX, scaleY);
@@ -96,16 +99,28 @@
                 context.drawImage(locCacheCanvas, 0, 0, locCacheCanvas.width, locCacheCanvas.height,
                     0, -locCanvasHeight + halfTileSize, locCacheCanvas.width * scaleX, locCanvasHeight);
             } else {
-                context.drawImage(locCacheCanvas, 0, 0, locCacheCanvas.width, locCacheCanvas.height,
-                    0, -locCanvasHeight, locCacheCanvas.width * scaleX, locCanvasHeight);
+                //context.drawImage(locCacheCanvas, 0, 0, locCacheCanvas.width, locCacheCanvas.height,
+                //    0, -locCanvasHeight, locCacheCanvas.width * scaleX, locCanvasHeight);
+                context.drawImage(locCacheCanvas, capturePos.x, capturePos.y, winSize.width, winSize.height,
+                    0, winSize.height* scaleY ,winSize.width* scaleX, winSize.height* scaleY);
             }
         }
         cc.g_NumberOfDraws++;
     };
 
+    proto._calculateCapturePosition = function() {
+        var mapNode = this._node._parent;
+        var anchorPos = cc.p(mapNode.width * mapNode._anchorPoint.x, mapNode.height * mapNode._anchorPoint.y);
+
+        var sx = -mapNode._position.x + anchorPos.x;
+        var sy = mapNode._position.y + anchorPos.y;
+        return cc.p(sx, sy);
+    };
+
     proto._updateCacheContext = function(size, height){
         var node = this._node,
             locContentSize = node._contentSize,
+
             locCanvas = this._cacheCanvas,
             scaleFactor = cc.contentScaleFactor();
         locCanvas.width = 0 | (locContentSize.width * 1.5 * scaleFactor);
@@ -123,6 +138,23 @@
 
     proto.getTexture = function(){
         return this._cacheTexture;
+    };
+
+    proto._updateDrawnTiles = function() {
+        var node = this._node,
+            locChildren = node._children,
+            len = locChildren.length,
+            returnChildren = [];
+        var viewPortRect = cc.view._viewPortRect;
+        for(var i = 0; i<len; i++) {
+            var child = locChildren[i];
+            var minTest = child._rect.x -viewPortRect.x >= 0 && child._rect.y - viewPortRect.y >= 0;
+            var maxTest = (child._rect.x + child._rect.width <= viewPortRect.width) &&
+                            (child._rect.y + child._rect.height <= viewPortRect.height);
+            if( minTest && maxTest)
+                returnChildren.push(child);
+        }
+        return locChildren;
     };
 
     proto.visit = function(parentCmd){
@@ -145,6 +177,8 @@
             renderer._turnToCacheMode(instanceID);
 
             node.sortAllChildren();
+
+            var locChildren = this._updateDrawnTiles();
             for (i = 0, len =  locChildren.length; i < len; i++) {
                 if (locChildren[i]){
                     var selCmd = locChildren[i]._renderCmd;
@@ -201,6 +235,7 @@
                 locChildren[i]._renderCmd.transform(this, recursive);
             }
         }
+        //this._cacheDirty = true;
     };
 
     proto.initImageSize = function(){
